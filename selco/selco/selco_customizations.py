@@ -113,7 +113,8 @@ def selco_issue_validate1(doc,method):
 	autocreate_service_record(doc)
 
 def autocreate_service_record(doc):
-	if doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
+	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
+	if ms_doc.selco_auto_create_service_record and ms_doc.selco_allow_role_to_service_record_from_issue in frappe.get_roles(frappe.session.user) and doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
 		service_record = frappe.new_doc("Service Record")
 		service_record.selco_branch = doc.selco_branch
 		service_record.selco_customer_id = doc.selco_customer_id
@@ -552,7 +553,8 @@ def make_maintenance_schedule(doc):
 
 		return
 
-	ms_doc = frappe.get_cached_doc("Maintenance Settings", "Maintenance Settings")
+	ms_doc = frappe.get_cached_doc("Maintenance Settings Template", "Maintenance Settings Template")
+
 	if (ms_doc.auto_create_maintenance_schedule and doc.start_date
 		and doc.periodicity and (doc.selco_type_of_invoice == "System Sales Invoice" or
 		ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user))):
@@ -658,7 +660,9 @@ def selco_delivery_note_submit(doc, method):
 	create_installation_note(doc)
 
 def create_installation_note(doc):
-	if doc.selco_type_of_service == "System Sales Invoice":
+	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
+	
+	if ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user) and doc.selco_type_of_service == "System Sales Invoice":
 		installation_note = make_installation_note(doc.name)
 		installation_note.inst_date = doc.posting_date
 		installation_note.selco_terms_and_conditions = frappe.db.get_value("Terms and Conditions",doc.selco_type_of_system,'terms')
