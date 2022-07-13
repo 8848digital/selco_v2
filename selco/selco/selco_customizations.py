@@ -114,7 +114,7 @@ def selco_issue_validate1(doc,method):
 
 def autocreate_service_record(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
-	if ms_doc.selco_auto_create_service_record and ms_doc.selco_allow_role_to_service_record_from_issue in frappe.get_roles(frappe.session.user) and doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
+	if ms_doc.selco_auto_create_service_record and doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
 		service_record = frappe.new_doc("Service Record")
 		service_record.selco_branch = doc.selco_branch
 		service_record.selco_customer_id = doc.selco_customer_id
@@ -553,44 +553,43 @@ def make_maintenance_schedule(doc):
 
 		return
 
-	ms_doc = frappe.get_cached_doc("Maintenance Settings Template", "Maintenance Settings Template")
+	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 
-	if (ms_doc.auto_create_maintenance_schedule and doc.start_date
-		and doc.periodicity and (doc.selco_type_of_invoice == "System Sales Invoice" or
-		ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user))):
-		
-		m_doc = frappe.new_doc('Maintenance Schedule')
-		m_doc.company = doc.company
-		m_doc.selco_branch = doc.selco_branch
-		m_doc.customer = doc.customer
-		m_doc.customer_name = doc.customer_name
-		m_doc.selco_customer_name = doc.customer_name
-		m_doc.customer_address = doc.customer_address
-		m_doc.address_display = doc.address_display
-		m_doc.contact_person = doc.contact_person
-		m_doc.contact_mobile = doc.contact_mobile
-		m_doc.contact_email = doc.contact_email
-		m_doc.contact_display = doc.contact_display
-		m_doc.transaction_date = doc.posting_date
-		m_doc.selco_customer_contact_number = doc.selco_customer_contact_number
-		m_doc.selco_landline_mobile_2 = doc.selco_customer_landline_number
-		m_doc.sales_invoice = doc.name
-
-		for d in doc.items:
-			m_doc.append('items', {
-				'item_code': d.item_code,
-				'item_name': d.item_name,
-				'description': d.description,
-				'start_date': doc.start_date,
-				'periodicity': doc.periodicity,
-				'no_of_visits': doc.no_of_visits,
-				'service_person': doc.service_person,
-				'sales_person': doc.sales_person
-			})
+	if doc.start_date and doc.periodicity:
+		if ((ms_doc.auto_create_maintenance_schedule and not ms_doc.role_to_make_maintenance_schedule) and (doc.selco_type_of_invoice == "System Sales Invoice" or (doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC"))) or (ms_doc.auto_create_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
 	
-		m_doc.save(ignore_permissions=True)
-		m_doc.submit()
-		frappe.msgprint(_("Maintenance Schedule {0} created").format(get_link_to_form("Maintenance Schedule", m_doc.name)))
+			m_doc = frappe.new_doc('Maintenance Schedule')
+			m_doc.company = doc.company
+			m_doc.selco_branch = doc.selco_branch
+			m_doc.customer = doc.customer
+			m_doc.customer_name = doc.customer_name
+			m_doc.selco_customer_name = doc.customer_name
+			m_doc.customer_address = doc.customer_address
+			m_doc.address_display = doc.address_display
+			m_doc.contact_person = doc.contact_person
+			m_doc.contact_mobile = doc.contact_mobile
+			m_doc.contact_email = doc.contact_email
+			m_doc.contact_display = doc.contact_display
+			m_doc.transaction_date = doc.posting_date
+			m_doc.selco_customer_contact_number = doc.selco_customer_contact_number
+			m_doc.selco_landline_mobile_2 = doc.selco_customer_landline_number
+			m_doc.sales_invoice = doc.name
+
+			for d in doc.items:
+				m_doc.append('items', {
+					'item_code': d.item_code,
+					'item_name': d.item_name,
+					'description': d.description,
+					'start_date': doc.start_date,
+					'periodicity': doc.periodicity,
+					'no_of_visits': doc.no_of_visits,
+					'service_person': doc.service_person,
+					'sales_person': doc.sales_person
+				})
+		
+			m_doc.save(ignore_permissions=True)
+			m_doc.submit()
+			frappe.msgprint(_("Maintenance Schedule {0} created").format(get_link_to_form("Maintenance Schedule", m_doc.name)))
 
 def selco_maintenance_schedule_submit(doc, method):
 	make_maintenance_visit(doc)
@@ -662,7 +661,7 @@ def selco_delivery_note_submit(doc, method):
 def create_installation_note(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 	
-	if ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user) and doc.selco_type_of_service == "System Sales Invoice":
+	if (ms_doc.selco_auto_create_installation_note and not ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and doc.selco_type_of_invoice == "System Sales Invoice") or (ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user)):
 		installation_note = make_installation_note(doc.name)
 		installation_note.inst_date = doc.posting_date
 		installation_note.selco_terms_and_conditions = frappe.db.get_value("Terms and Conditions",doc.selco_type_of_system,'terms')
