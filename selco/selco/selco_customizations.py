@@ -555,9 +555,11 @@ def make_maintenance_schedule(doc):
 
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 
-	if doc.start_date and doc.periodicity:
-		if ((ms_doc.auto_create_maintenance_schedule and not ms_doc.role_to_make_maintenance_schedule) and (doc.selco_type_of_invoice == "System Sales Invoice" or (doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC"))) or (ms_doc.auto_create_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
-	
+	if doc.start_date and doc.periodicity and ms_doc.auto_create_maintenance_schedule:
+		# if ((ms_doc.auto_create_maintenance_schedule and not ms_doc.role_to_make_maintenance_schedule) and (doc.selco_type_of_invoice == "System Sales Invoice" or (doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC"))) or (ms_doc.auto_create_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
+		
+		if doc.selco_type_of_invoice == "System Sales Invoice" or doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC" or (ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
+
 			m_doc = frappe.new_doc('Maintenance Schedule')
 			m_doc.company = doc.company
 			m_doc.selco_branch = doc.selco_branch
