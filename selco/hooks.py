@@ -49,7 +49,8 @@ doc_events = {
 		 },
 		 "Delivery Note":{
 						 "before_insert":"selco.selco.selco_customizations.selco_delivery_note_before_insert",
-						 "validate":"selco.selco.selco_customizations.selco_delivery_note_validates"
+						 "validate":"selco.selco.selco_customizations.selco_delivery_note_validates",
+						 "on_submit": "selco.selco.selco_customizations.selco_delivery_note_submit"
 		 },
 		 "Sales Invoice":{
 						 "before_insert": "selco.selco.selco_customizations.selco_sales_invoice_before_insert",
@@ -82,9 +83,6 @@ doc_events = {
 						"before_insert":"selco.selco.selco_customizations.selco_purchase_order_before_insert",
 						"validate": "selco.selco.selco_customizations.selco_purchase_order_validate"
 	},
-	"Delivery Note":{
-		 "on_submit": "selco.selco.selco_customizations.selco_delivery_note_submit"
-	 },
 	 "Service Record":{
 		 "validate": "selco.selco.selco_customizations.selco_service_record_validate",
 		 "on_submit": "selco.selco.selco_customizations.selco_service_record_submit",
