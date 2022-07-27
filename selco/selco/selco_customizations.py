@@ -998,7 +998,7 @@ def stock_entry_reference_qty_update(doc, method):
 			reference_entry_data = frappe.db.get_value(
 				'Stock Entry Detail',
 				{'parent': item.reference_rej_in_or_rej_ot, 'item_code': item.item_code},
-				['name', 'qty'])
+				['name', 'qty'], as_dict=1)
 
 			if not reference_entry_data:
 				msg = f"Row #{item.idx}: Item {item.item_code} does not exist in Reference Stock Entry {item.reference_rej_in_or_rej_ot}"
