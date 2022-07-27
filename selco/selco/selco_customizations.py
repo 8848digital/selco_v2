@@ -111,6 +111,7 @@ def selco_issue_validate1(doc,method):
 		doc.status = "Closed"
 		doc.resolution_date = now()
 	autocreate_service_record(doc)
+	cancel_autocreated_service_record(doc)
 
 def autocreate_service_record(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
@@ -132,6 +133,14 @@ def autocreate_service_record(doc):
 		service_record.save()
 		frappe.msgprint(_("Service Record {0} created").format(get_link_to_form("Service Record", service_record.name)))
 
+def cancel_autocreated_service_record(doc):
+	if doc.workflow_state == "Complaint Cancelled":
+		for row in doc.selco_service_record:
+			if row.service_record_no:
+				sr_doc = frappe.get_doc("Service Record",row.service_record_no)
+				if sr_doc.docstatus == 1:
+					sr_doc.cancel()
+					frappe.msgprint(_("Service Record {0} cancelled").format(get_link_to_form("Service Record", sr_doc.name)))
 
 def selco_service_record_validate(doc,method):
 	add_child_table_blank_row(doc)
@@ -179,7 +188,7 @@ def delete_service_record_from_issue_child_table(doc):
 		issue_doc = frappe.get_doc("Issue",doc.selco_complaint_number)
 		to_remove = []
 		for row in issue_doc.selco_service_record:
-			if row.service_record_number == doc.name:
+			if row.service_record_no == doc.name:
 				to_remove.append(row)
 		[issue_doc.remove(d) for d in to_remove]
 		issue_doc.save(ignore_permissions=True)
