@@ -17,7 +17,8 @@ doc_events = {
 		},
 		"Issue": {
 				 "before_insert":"selco.selco.selco_customizations.selco_issue_before_insert",
-				 "validate": "selco.selco.selco_customizations.selco_issue_validate1"
+				 "validate": "selco.selco.selco_customizations.selco_issue_validate1",
+				 "on_update": "selco.selco.selco_customizations.on_update"
 		},
 		"Warranty Claim": {
 					"validate": "selco.selco.selco_customizations.selco_warranty_claim_validate"

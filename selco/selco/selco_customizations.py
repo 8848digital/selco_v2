@@ -110,12 +110,15 @@ def selco_issue_validate1(doc,method):
 		doc.selco_complaint_closed_date = cur_date
 		doc.status = "Closed"
 		doc.resolution_date = now()
+
+def on_update(doc,method):
 	autocreate_service_record(doc)
 	cancel_autocreated_service_record(doc)
 
 def autocreate_service_record(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 	if ms_doc.selco_auto_create_service_record and doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
+		frappe.msgprint(str(doc.workflow_state))
 		service_record = frappe.new_doc("Service Record")
 		service_record.selco_branch = doc.selco_branch
 		service_record.selco_customer_id = doc.selco_customer_id
