@@ -643,21 +643,23 @@ def make_maintenance_visit(doc):
 		# })
 		sales_invoice = frappe.get_doc("Sales Invoice", doc.sales_invoice)
 		delivery_notes = set([row.delivery_note for row in sales_invoice.items])
+		
 		for delivery_note in delivery_notes:
-			dn_doc = frappe.get_doc("Delivery Note",delivery_note)
-			if dn_doc.packed_items:
-				for row in dn_doc.packed_items:
-					mv_doc.append('purposes', {
-					'item_code': row.item_code,
-					'item_name': frappe.db.get_value("Item", d.item_code,'item_name'),
-					'item_group': frappe.db.get_value("Item", d.item_code,'item_group'),
-					'description': row.description,
-					'selco_quantity': row.qty,
-					'service_person': d.sales_person,
-					'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
-					'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
-					'work_done': 'Done'
-				})
+			if delivery_note:
+				dn_doc = frappe.get_doc("Delivery Note",delivery_note)
+				if dn_doc.packed_items:
+					for row in dn_doc.packed_items:
+						mv_doc.append('purposes', {
+						'item_code': row.item_code,
+						'item_name': frappe.db.get_value("Item", d.item_code,'item_name'),
+						'item_group': frappe.db.get_value("Item", d.item_code,'item_group'),
+						'description': row.description,
+						'selco_quantity': row.qty,
+						'service_person': d.sales_person,
+						'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
+						'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
+						'work_done': 'Done'
+					})
 			mv_doc.save(ignore_permissions=True)
 			frappe.msgprint(_("Maintenance Visit {0} created").format(get_link_to_form("Maintenance Visit", mv_doc.name)))
 
@@ -725,6 +727,7 @@ def validate_schedule_date_for_holiday_list(schedule_date, service_person, compa
 
 @frappe.whitelist()
 def selco_sales_invoice_validate(doc,method):
+	set_sales_person(doc)
 	#selco_warehouse  = frappe.get_cached_value("Branch",doc.branch,"selco_warehouse")
 	selco_cost_center = frappe.get_cached_value("Branch", doc.selco_branch, "selco_cost_center")
 
@@ -816,6 +819,10 @@ def selco_sales_invoice_validate(doc,method):
 
 	if not doc.sales_partner and doc.total_commission:
 		doc.total_commission = 0.0
+
+def set_sales_person(doc):
+	if doc.sales_team:
+		doc.sales_person = doc.sales_team[0].sales_person
 
 def selco_payment_entry_before_insert(doc,method):
 	if doc.payment_type == "Receive":
