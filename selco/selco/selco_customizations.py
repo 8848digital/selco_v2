@@ -642,10 +642,9 @@ def make_maintenance_visit(doc):
 		# 	'work_done': 'Done'
 		# })
 		sales_invoice = frappe.get_doc("Sales Invoice", doc.sales_invoice)
-		delivery_notes = set([row.delivery_note for row in sales_invoice.items])
-		
-		for delivery_note in delivery_notes:
-			if delivery_note:
+		delivery_notes = set([row.delivery_note for row in sales_invoice.items if row.delivery_note])
+		if delivery_notes:
+			for delivery_note in delivery_notes:
 				dn_doc = frappe.get_doc("Delivery Note",delivery_note)
 				if dn_doc.packed_items:
 					for row in dn_doc.packed_items:
@@ -660,6 +659,18 @@ def make_maintenance_visit(doc):
 						'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
 						'work_done': 'Done'
 					})
+		else:
+			mv_doc.append('purposes', {
+				'item_code': sales_invoice.items[0].item_code,
+				'item_name': frappe.db.get_value("Item", sales_invoice.items[0].item_code,'item_name'),
+				'item_group': frappe.db.get_value("Item", sales_invoice.items[0].item_code,'item_group'),
+				'description': sales_invoice.items[0].description,
+				'selco_quantity': sales_invoice.items[0].qty,
+				'service_person': d.sales_person,
+				'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
+				'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
+				'work_done': 'Done'
+			})
 			mv_doc.save(ignore_permissions=True)
 			frappe.msgprint(_("Maintenance Visit {0} created").format(get_link_to_form("Maintenance Visit", mv_doc.name)))
 
