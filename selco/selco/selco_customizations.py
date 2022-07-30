@@ -100,6 +100,7 @@ def selco_get_items_from_rejection_in_or_out(stock_entry, branch):
 
 @frappe.whitelist()
 def selco_issue_validate1(doc,method):
+	set_created_by(doc)
 	if doc.workflow_state =="Complaint Open":
 		if not doc.selco_customer_address:
 			frappe.throw("Please Enter Customer Address")
@@ -146,6 +147,7 @@ def cancel_autocreated_service_record(doc):
 					frappe.msgprint(_("Service Record {0} cancelled").format(get_link_to_form("Service Record", sr_doc.name)))
 
 def selco_service_record_validate(doc,method):
+	set_created_by(doc)
 	add_child_table_blank_row(doc)
 	calculate_total(doc)
 
@@ -199,6 +201,7 @@ def delete_service_record_from_issue_child_table(doc):
 
 @frappe.whitelist()
 def selco_delivery_note_validates(doc,method):
+	set_created_by(doc)
 	selco_warehouse, selco_cost_center = frappe.get_cached_value("Branch",
 		doc.selco_branch, ["selco_warehouse", "selco_cost_center"])
 
@@ -739,6 +742,7 @@ def validate_schedule_date_for_holiday_list(schedule_date, service_person, compa
 @frappe.whitelist()
 def selco_sales_invoice_validate(doc,method):
 	set_sales_person(doc)
+	set_created_by(doc)
 	#selco_warehouse  = frappe.get_cached_value("Branch",doc.branch,"selco_warehouse")
 	selco_cost_center = frappe.get_cached_value("Branch", doc.selco_branch, "selco_cost_center")
 
@@ -1158,6 +1162,7 @@ def validate_back_dated_entries(doc, method):
 				frappe.throw(_("User don't have permission to submit the back dated {0}, please contact to administrator").format(doc.doctype))
 
 def selco_maintenance_visit_validate(doc, method):
+	set_created_by(doc)
 	calc_total_mv(doc)
 
 def calc_total_mv(doc):
@@ -1166,3 +1171,10 @@ def calc_total_mv(doc):
 		total += flt(row.selco_collected_amount)
 	doc.selco_total_component_charges_collected = total
 	doc.selco_total_amount = flt(doc.selco_total_component_charges_collected) + flt(doc.selco_service_charges_collected)
+
+def selco_installation_note_validate(doc,method):
+	set_created_by(doc)
+
+def set_created_by(self):
+	if not self.get('was_created_by'):
+		self.was_created_by = frappe.utils.get_fullname(self.owner)

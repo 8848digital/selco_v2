@@ -89,6 +89,9 @@ doc_events = {
 		 "on_submit": "selco.selco.selco_customizations.selco_service_record_submit",
 		 "on_cancel": "selco.selco.selco_customizations.selco_service_record_cancel"
 	 },
+	 "Installation Note":{
+		"validate": "selco.selco.selco_customizations.selco_installation_note_validate",
+	 }
  }
 
 # scheduler_events = {
