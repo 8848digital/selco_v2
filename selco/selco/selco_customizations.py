@@ -674,8 +674,8 @@ def make_maintenance_visit(doc):
 				'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
 				'work_done': 'Done'
 			})
-			mv_doc.save(ignore_permissions=True)
-			frappe.msgprint(_("Maintenance Visit {0} created").format(get_link_to_form("Maintenance Visit", mv_doc.name)))
+		mv_doc.save(ignore_permissions=True)
+		frappe.msgprint(_("Maintenance Visit {0} created").format(get_link_to_form("Maintenance Visit", mv_doc.name)))
 
 		
 def selco_maintenance_schedule_cancel(doc, method):
