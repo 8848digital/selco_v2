@@ -691,7 +691,7 @@ def selco_delivery_note_submit(doc, method):
 def create_installation_note(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 	
-	if (ms_doc.selco_auto_create_installation_note and not ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and doc.selco_type_of_invoice == "System Sales Invoice") or (ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user)):
+	if (not doc.is_return and ms_doc.selco_auto_create_installation_note and not ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and doc.selco_type_of_invoice == "System Sales Invoice") or (ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user)):
 		installation_note = make_installation_note(doc.name)
 		installation_note.inst_date = doc.posting_date
 		if frappe.db.exists("Terms and Conditions",doc.selco_type_of_system):
