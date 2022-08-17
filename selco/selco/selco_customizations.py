@@ -150,6 +150,7 @@ def selco_service_record_validate(doc,method):
 	set_created_by(doc)
 	add_child_table_blank_row(doc)
 	calculate_total(doc)
+	update_contact(doc, doc.selco_customer_id)
 
 def selco_service_record_submit(doc,method):
 	update_issue(doc)
@@ -1165,6 +1166,7 @@ def validate_back_dated_entries(doc, method):
 def selco_maintenance_visit_validate(doc, method):
 	set_created_by(doc)
 	calc_total_mv(doc)
+	update_contact(doc, doc.customer)
 
 def calc_total_mv(doc):
 	total = 0
@@ -1175,7 +1177,13 @@ def calc_total_mv(doc):
 
 def selco_installation_note_validate(doc,method):
 	set_created_by(doc)
+	update_contact(doc, doc.customer)
 
 def set_created_by(self):
 	if not self.get('was_created_by'):
 		self.was_created_by = frappe.utils.get_fullname(self.owner)
+
+def update_contact(self, customer):
+	if self.selco_customer_contact_number and self.selco_customer_contact_number != frappe.db.get_value("Customer", customer,'selco_customer_contact_number_2'):
+		frappe.db.set_value("Customer", customer, 'selco_customer_contact_number_2',self.selco_customer_contact_number)
+		frappe.msgprint(f"Customer Contact Number updated in {customer}.")
