@@ -582,8 +582,13 @@ def make_maintenance_schedule(doc):
 			m_doc.customer = doc.customer
 			m_doc.customer_name = doc.customer_name
 			m_doc.selco_customer_name = doc.customer_name
-			m_doc.customer_address = doc.customer_address
-			m_doc.address_display = doc.address_display
+			if doc.shipping_address_name:
+				m_doc.customer_address = doc.shipping_address_name
+				m_doc.address_display = doc.shipping_address
+			else:
+				m_doc.customer_address = doc.customer_address
+				m_doc.address_display = doc.address_display
+
 			m_doc.contact_person = doc.contact_person
 			m_doc.contact_mobile = doc.contact_mobile
 			m_doc.contact_email = doc.contact_email
@@ -760,7 +765,7 @@ def selco_sales_invoice_validate(doc,method):
 				doc.taxes[i].tax_amount = doc.taxes[i].tax_amount * -1
 
 	if doc.start_date and doc.periodicity:
-		month_map = {'Monthly': 1, 'Quarterly': 3, 'Half Yearly': 6, 'Yearly': 12}
+		month_map = {'Monthly': 1, 'Quarterly': 3, 'Half Yearly': 6, 'Nine Monthly': 9, 'Yearly': 12}
 		mcount = month_map.get(doc.periodicity)
 		if mcount:
 			doc.end_date = add_months(doc.start_date, mcount * cint(doc.no_of_visits))
@@ -1182,8 +1187,11 @@ def selco_installation_note_validate(doc,method):
 def set_created_by(self):
 	if not self.get('was_created_by'):
 		self.was_created_by = frappe.utils.get_fullname(self.owner)
+<<<<<<< HEAD
 
 def update_contact(self, customer):
 	if self.selco_customer_contact_number and self.selco_customer_contact_number != frappe.db.get_value("Customer", customer,'selco_customer_contact_number_2'):
 		frappe.db.set_value("Customer", customer, 'selco_customer_contact_number_2',self.selco_customer_contact_number)
 		frappe.msgprint(f"Customer Contact Number updated in {customer}.")
+=======
+>>>>>>> a1d29fc0fa337cec75fa9073d6a911e4f68b307c

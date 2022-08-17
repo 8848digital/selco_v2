@@ -23,12 +23,6 @@
   "selco_posting_date",
   "selco_cse_name",
   "selco_type_of_service_attended",
-  "fault_rectified_and_replacement_details_section",
-  "fault_rectified_and_replacement_details",
-  "sb1_section",
-  "selco_total_component_charges_collected",
-  "selco_service_charges_collected",
-  "selco_total_amount",
   "cb11_column",
   "selco_job_status",
   "sb2_section",
@@ -153,40 +147,6 @@
    "fieldtype": "Select",
    "label": "Type of Service Attended",
    "options": "\nScheduled\nComplaint Based\nAMC Based",
-   "permlevel": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "fault_rectified_and_replacement_details_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "fault_rectified_and_replacement_details",
-   "fieldtype": "Table",
-   "label": "Fault Rectified and Replacement Details",
-   "options": "Service Record Item Details"
-  },
-  {
-   "fieldname": "sb1_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "selco_total_component_charges_collected",
-   "fieldtype": "Currency",
-   "label": "Total Component Charges Collected",
-   "permlevel": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "selco_service_charges_collected",
-   "fieldtype": "Currency",
-   "label": "Service Charges Collected",
-   "permlevel": 2
-  },
-  {
-   "fieldname": "selco_total_amount",
-   "fieldtype": "Currency",
-   "label": "Total Amount",
    "permlevel": 1,
    "read_only": 1
   },
@@ -328,7 +288,7 @@
  "icon": "fa fa-wrench",
  "is_submittable": 1,
  "links": [],
- "modified": "2022-05-30 15:10:56.592984",
+ "modified": "2022-07-30 00:29:18.787313",
  "modified_by": "Administrator",
  "module": "SELCO",
  "name": "Service Record",
