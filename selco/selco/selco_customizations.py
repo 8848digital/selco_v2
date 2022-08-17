@@ -1187,11 +1187,9 @@ def selco_installation_note_validate(doc,method):
 def set_created_by(self):
 	if not self.get('was_created_by'):
 		self.was_created_by = frappe.utils.get_fullname(self.owner)
-<<<<<<< HEAD
+
 
 def update_contact(self, customer):
 	if self.selco_customer_contact_number and self.selco_customer_contact_number != frappe.db.get_value("Customer", customer,'selco_customer_contact_number_2'):
 		frappe.db.set_value("Customer", customer, 'selco_customer_contact_number_2',self.selco_customer_contact_number)
 		frappe.msgprint(f"Customer Contact Number updated in {customer}.")
-=======
->>>>>>> a1d29fc0fa337cec75fa9073d6a911e4f68b307c
