@@ -581,8 +581,13 @@ def make_maintenance_schedule(doc):
 			m_doc.customer = doc.customer
 			m_doc.customer_name = doc.customer_name
 			m_doc.selco_customer_name = doc.customer_name
-			m_doc.customer_address = doc.customer_address
-			m_doc.address_display = doc.address_display
+			if doc.shipping_address_name:
+				m_doc.customer_address = doc.shipping_address_name
+				m_doc.address_display = doc.shipping_address
+			else:
+				m_doc.customer_address = doc.customer_address
+				m_doc.address_display = doc.address_display
+
 			m_doc.contact_person = doc.contact_person
 			m_doc.contact_mobile = doc.contact_mobile
 			m_doc.contact_email = doc.contact_email
@@ -759,7 +764,7 @@ def selco_sales_invoice_validate(doc,method):
 				doc.taxes[i].tax_amount = doc.taxes[i].tax_amount * -1
 
 	if doc.start_date and doc.periodicity:
-		month_map = {'Monthly': 1, 'Quarterly': 3, 'Half Yearly': 6, 'Yearly': 12}
+		month_map = {'Monthly': 1, 'Quarterly': 3, 'Half Yearly': 6, 'Nine Monthly': 9, 'Yearly': 12}
 		mcount = month_map.get(doc.periodicity)
 		if mcount:
 			doc.end_date = add_months(doc.start_date, mcount * cint(doc.no_of_visits))
