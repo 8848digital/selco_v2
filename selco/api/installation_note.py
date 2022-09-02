@@ -47,8 +47,14 @@ def get_installation_note():
 
 @frappe.whitelist(methods=["PUT"])
 def update_installation_note():
+	auth_type, auth_token = frappe.get_request_header("Authorization", "").split(" ")
+	if auth_type.lower() == "token":
+		api_key, api_secret = auth_token.split(":")
+		user = frappe.db.get_value(doctype="User", filters={"api_key": api_key}, fieldname=["name"])
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
+		if user:
+			request_data.update({'submitted_by_mobile': user})
 		if not request_data.get("name"):
 			frappe.throw("Define name to update the record")
 		if not frappe.db.exists("Installation Note",request_data.get("name")):

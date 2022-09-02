@@ -43,15 +43,21 @@ def get_service_record():
 		parent_dict = frappe.db.get_value("Service Record",row.name,parent_fields, as_dict=True)
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_local_area')
-		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, as_dict=True)
+		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, order_by = 'idx',as_dict=True)
 		data_list.append(parent_dict)
 
 	return data_list
 
 @frappe.whitelist(methods=["PUT"])
 def update_service_record():
+	auth_type, auth_token = frappe.get_request_header("Authorization", "").split(" ")
+	if auth_type.lower() == "token":
+		api_key, api_secret = auth_token.split(":")
+		user = frappe.db.get_value(doctype="User", filters={"api_key": api_key}, fieldname=["name"])
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
+		if user:
+			request_data.update({'submitted_by_mobile': user})
 		if not request_data.get("name"):
 			frappe.throw("Define name to update the record")
 		if not frappe.db.exists("Service Record",request_data.get("name")):
