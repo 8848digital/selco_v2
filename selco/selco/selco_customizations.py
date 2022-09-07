@@ -101,7 +101,6 @@ def selco_get_items_from_rejection_in_or_out(stock_entry, branch):
 @frappe.whitelist()
 def selco_issue_validate1(doc,method):
 	set_created_by(doc)
-	set_modified_by(doc)
 	if doc.workflow_state =="Complaint Open":
 		if not doc.selco_customer_address:
 			frappe.throw("Please Enter Customer Address")
@@ -149,6 +148,7 @@ def cancel_autocreated_service_record(doc):
 
 def selco_service_record_validate(doc,method):
 	set_created_by(doc)
+	set_modified_by(doc)
 	add_child_table_blank_row(doc)
 	calculate_total(doc)
 	update_contact(doc, doc.selco_customer_id)
@@ -1171,6 +1171,7 @@ def validate_back_dated_entries(doc, method):
 
 def selco_maintenance_visit_validate(doc, method):
 	set_created_by(doc)
+	set_modified_by(doc)
 	calc_total_mv(doc)
 	update_contact(doc, doc.customer)
 
@@ -1183,6 +1184,7 @@ def calc_total_mv(doc):
 
 def selco_installation_note_validate(doc,method):
 	set_created_by(doc)
+	set_modified_by(doc)
 	update_contact(doc, doc.customer)
 
 def set_created_by(self):
