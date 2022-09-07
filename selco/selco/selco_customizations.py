@@ -101,6 +101,7 @@ def selco_get_items_from_rejection_in_or_out(stock_entry, branch):
 @frappe.whitelist()
 def selco_issue_validate1(doc,method):
 	set_created_by(doc)
+	set_modified_by(doc)
 	if doc.workflow_state =="Complaint Open":
 		if not doc.selco_customer_address:
 			frappe.throw("Please Enter Customer Address")
@@ -1188,6 +1189,8 @@ def set_created_by(self):
 	if not self.get('was_created_by'):
 		self.was_created_by = frappe.utils.get_fullname(self.owner)
 
+def set_modified_by(self):
+	self.was_submitted_by =  frappe.utils.get_fullname(self.modified_by)
 
 def update_contact(self, customer):
 	if self.selco_customer_contact_number and self.selco_customer_contact_number != frappe.db.get_value("Customer", customer,'selco_customer_contact_number_2'):
