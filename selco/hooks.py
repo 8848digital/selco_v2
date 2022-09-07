@@ -11,6 +11,9 @@ app_color = "grey"
 app_email = "basawaraj@selco-india.com"
 app_license = "MIT"
 
+override_doctype_class = {"Maintenance Schedule": "selco.selco.custom_maintenance_schedule.CustomMaintenanceSchedule"}
+
+
 doc_events = {
 		"*": {
 				 "validate": "selco.selco.selco_customizations.validate_back_dated_entries"
