@@ -672,6 +672,19 @@ def make_maintenance_visit(doc):
 						'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
 						'work_done': 'Done'
 					})
+				else:
+					for row in dn_doc.items:
+						mv_doc.append('purposes', {
+							'item_code': row.item_code,
+							'item_name': row.item_name,
+							'item_group': row.item_group,
+							'description': row.description,
+							'selco_quantity': row.qty,
+							'service_person': d.sales_person,
+							'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
+							'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
+							'work_done': 'Done'
+						})
 		else:
 			mv_doc.append('purposes', {
 				'item_code': sales_invoice.items[0].item_code,
