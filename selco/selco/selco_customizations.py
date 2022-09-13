@@ -665,7 +665,7 @@ def make_maintenance_visit(doc):
 						'item_code': row.item_code,
 						'item_name': frappe.db.get_value("Item", d.item_code,'item_name'),
 						'item_group': frappe.db.get_value("Item", d.item_code,'item_group'),
-						'description': row.description,
+						'description': row.description or frappe.db.get_value("Item", d.item_code,'description'),
 						'selco_quantity': row.qty,
 						'service_person': d.sales_person,
 						'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
