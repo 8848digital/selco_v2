@@ -1,6 +1,7 @@
 import frappe
 import json
 from frappe import _
+from frappe.utils import add_days, getdate, nowdate
 
 
 # @frappe.whitelist()
@@ -25,6 +26,7 @@ from frappe import _
 
 @frappe.whitelist()
 def get_service_record():
+	past_selco_posting_date = getdate(add_days(nowdate(), -7))
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
 		if request_data.get("filters").get('sync_date'):
@@ -33,7 +35,9 @@ def get_service_record():
 		else:
 			data = frappe.get_list("Service Record",{'docstatus':['!=',2]})
 	else:
-		data = frappe.get_list("Service Record",{'docstatus':['!=',2]})
+		data_1 = frappe.get_list("Service Record",{'docstatus':['!=',2],'status':"Draft"})
+		data_2 = frappe.get_list("Service Record",{'docstatus':['!=',2],'status':"Submitted",'selco_job_status':'Complete',selco_posting_date':["<=",nowdate()],'selco_posting_date':[">=",past_selco_posting_date]})
+		data = data_1 + data_2
 
 	data_list = []
 	parent_fields = ['name','selco_complaint_date','docstatus','selco_customer_feedback','selco_service_charge_collected','selco_total_component_charges_collected','selco_total_amount','selco_detail_address','selco_customer_address','selco_customer_remarks','selco_customer_signature','selco_customer_date','selco_landline_mobile_2','selco_cse_location','selco_branch','selco_posting_date','selco_cse_feedback','selco_job_status','selco_cse_name','selco_customer_contact_number','selco_signature_of_the_cse','selco_cse_signature','selco_signature_of_the_customer','selco_customer_id','selco_cse_remarks','selco_complaint_number','selco_cse_date','selco_customer_full_name','selco_type_of_service_attended','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','selco_sales_invoice_number','selco_sales_invoice_date','was_created_by','was_submitted_by','selco_issue_status','submitted_by_mobile']

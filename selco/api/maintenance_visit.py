@@ -1,6 +1,7 @@
 import frappe
 import json
 from frappe import _
+from frappe.utils import add_days, getdate, nowdate
 
 # from frappe.handler import upload_file
 # @frappe.whitelist()
@@ -35,6 +36,8 @@ from frappe import _
 
 @frappe.whitelist()
 def get_maintenance_visit():
+	future_mntc_date = getdate(add_days(nowdate(), 30))
+	past_selco_cse_date = getdate(add_days(nowdate(), -7))
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
 		if request_data.get("filters").get('sync_date'):
@@ -43,8 +46,10 @@ def get_maintenance_visit():
 		else:
 			data = frappe.get_list("Maintenance Visit",{'docstatus':['!=',2]})
 	else:
-		data = frappe.get_list("Maintenance Visit",{'docstatus':['!=',2]})
-
+		data_1 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],'status':"Draft","completion_status":"Partially Completed",'mntc_date':["<=",future_mntc_date]})
+		data_2 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],"completion_status":"Fully Completed",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]})
+		data = data_1 + data_2
+		
 	data_list = []
 	parent_fields = ['name','selco_branch','customer','customer_name','address_display','selco_customer_contact_number','selco_customer_landline_number','selco_payment_entry_number','mntc_date','completion_status','maintenance_type','status','selco_total_component_charges_collected','selco_service_charges_collected','selco_total_amount','selco_cse_remarks','selco_cse_feedback','selco_signature_of_the_customer','selco_cse_signature','selco_signature_of_the_cse','selco_cse_location','selco_customer_remarks','selco_customer_feedback','customer_address','selco_customers_signature','naming_series','maintenance_schedule','maintenance_schedule_detail','mntc_time','company','customer_group','selco_taluk','selco_sales_person','selco_service_person','selco_customer_date','selco_cse_date','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','was_created_by','was_submitted_by','submitted_by_mobile']	
 	child_fields = ['name','idx','parent','parenttype','item_code','selco_item_group','item_name','selco_make','selco_quantity','selco_serial_number','selco_specs','service_person','description','work_done','selco_collected_amount']

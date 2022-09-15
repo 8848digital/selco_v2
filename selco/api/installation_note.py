@@ -1,6 +1,7 @@
 import frappe
 import json
 from frappe import _
+from frappe.utils import add_days, getdate, nowdate
 
 # @frappe.whitelist()
 # def get_installation_note():
@@ -22,6 +23,7 @@ from frappe import _
 
 @frappe.whitelist()
 def get_installation_note():
+	past_selco_cse_date = getdate(add_days(nowdate(), -7))
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
 		if request_data.get("filters").get('sync_date'):
@@ -30,7 +32,9 @@ def get_installation_note():
 		else:
 			data = frappe.get_list("Installation Note",{'docstatus':['!=',2]})
 	else:
-		data = frappe.get_list("Installation Note",{'docstatus':['!=',2]})
+		data_1 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Draft"})
+		data_2 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Submitted",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]})
+		data = data_1 + data_2
 
 	data_list = []
 	parent_fields = ['name','selco_branch','naming_series','status','selco_service_person','selco_payment_entry_number','customer_group','customer','customer_name','territory','customer_address','address_display','selco_customer_contact_number','selco_landline_mobile_2','selco_sales_person','selco_warranty_terms1','inst_date','selco_installation_start_date','selco_installation_end_date','inst_time','selco_delivery_note_date','selco_electrification_status','selco_concealed','selco_piping','selco_cnc','selco_length_of_hot_water_line','selco_length_of_cold_water_line','selco_taps','selco_non_return_valves','selco_gate_valve','selco_oht_height','selco_customer_remarks','selco_customer_feedback','selco_cse_remarks','selco_cse_feedback','selco_cse_name','selco_cse_name_1','selco_signature_of_customer','selco_cse_date','selco_customer_name','selco_custmer_date','selco_terms_and_conditions','selco_cse_location','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','was_created_by','was_submitted_by','submitted_by_mobile']
