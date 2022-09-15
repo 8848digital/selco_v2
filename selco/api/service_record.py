@@ -35,8 +35,8 @@ def get_service_record():
 		else:
 			data = frappe.get_list("Service Record",{'docstatus':['!=',2]})
 	else:
-		data_1 = frappe.get_list("Service Record",{'docstatus':['!=',2],'status':"Draft"})
-		data_2 = frappe.get_list("Service Record",{'docstatus':['!=',2],'status':"Submitted",'selco_job_status':'Complete',selco_posting_date':["<=",nowdate()],'selco_posting_date':[">=",past_selco_posting_date]})
+		data_1 = frappe.get_list("Service Record",{'docstatus':0})
+		data_2 = frappe.get_list("Service Record",{'docstatus':1,'selco_job_status':'Complete','selco_posting_date':["<=",nowdate()],'selco_posting_date':[">=",past_selco_posting_date]})
 		data = data_1 + data_2
 
 	data_list = []
