@@ -166,7 +166,7 @@ def add_child_table_blank_row(self):
 			self.append('selco_fault_rectified_and_replacement_detail',{
 				'selco_is_auto_created': 1
 			})
-		
+
 def calculate_total(doc):
 	total = 0
 	for row in doc.selco_fault_rectified_and_replacement_detail:
@@ -185,7 +185,7 @@ def update_issue(doc):
 				'service_amount': flt(doc.selco_service_charge_collected),
 				'type_of_service': doc.selco_type_of_service_attended,
 				'selco_total_component_charges_collected': doc.selco_total_component_charges_collected,
-				'selco_total_amount': doc.selco_total_amount		
+				'selco_total_amount': doc.selco_total_amount
 
 			})
 			issue_doc.save(ignore_permissions=True)
@@ -553,10 +553,13 @@ def selco_sales_invoice_cancel(doc, method=None):
 	delete_auto_created_maintenance_schedule(doc)
 
 def delete_auto_created_maintenance_schedule(doc):
-	for row in frappe.get_all("Maintenance Schedule", filters={'docstatus': 2,"sales_invoice": doc.name}):
-		# doc = frappe.get_doc("Maintenance Schedule",row.name)
-		# doc.cancel()
-		frappe.delete_doc("Maintenance Schedule", row.name)
+	for row in frappe.get_all("Maintenance Schedule",
+		filters={'docstatus':("<",  2), "sales_invoice": doc.name}):
+		ms_doc = frappe.get_doc("Maintenance Schedule",row.name)
+		if ms_doc.docstatus == 1:
+			ms_doc.cancel()
+
+		ms_doc.delete()
 
 def selco_sales_invoice_submit(doc, method):
 	make_maintenance_schedule(doc)
@@ -574,7 +577,7 @@ def make_maintenance_schedule(doc):
 
 	if doc.start_date and doc.periodicity and ms_doc.auto_create_maintenance_schedule:
 		# if ((ms_doc.auto_create_maintenance_schedule and not ms_doc.role_to_make_maintenance_schedule) and (doc.selco_type_of_invoice == "System Sales Invoice" or (doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC"))) or (ms_doc.auto_create_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
-		
+
 		if doc.selco_type_of_invoice == "System Sales Invoice" or doc.selco_type_of_invoice == "Service Bill" and doc.selco_purpose =="AMC" or (ms_doc.role_to_make_maintenance_schedule and ms_doc.role_to_make_maintenance_schedule in frappe.get_roles(frappe.session.user)):
 
 			m_doc = frappe.new_doc('Maintenance Schedule')
@@ -610,7 +613,7 @@ def make_maintenance_schedule(doc):
 					'service_person': doc.service_person,
 					'sales_person': doc.sales_person
 				})
-		
+
 			m_doc.save(ignore_permissions=True)
 			m_doc.submit()
 			frappe.msgprint(_("Maintenance Schedule {0} created").format(get_link_to_form("Maintenance Schedule", m_doc.name)))
@@ -642,7 +645,7 @@ def make_maintenance_visit(doc):
 		mv_doc.maintenance_schedule_detail = d.name
 		mv_doc.selco_sales_person = frappe.db.get_value("Sales Invoice",doc.sales_invoice,'sales_person')
 		mv_doc.selco_service_person = frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person')
-		
+
 		# mv_doc.append('purposes', {
 		# 	'item_code': d.item_code,
 		# 	'item_name': d.item_name,
@@ -662,13 +665,26 @@ def make_maintenance_visit(doc):
 						'item_code': row.item_code,
 						'item_name': frappe.db.get_value("Item", d.item_code,'item_name'),
 						'item_group': frappe.db.get_value("Item", d.item_code,'item_group'),
-						'description': row.description,
+						'description': row.description or frappe.db.get_value("Item", d.item_code,'description'),
 						'selco_quantity': row.qty,
 						'service_person': d.sales_person,
 						'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
 						'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
 						'work_done': 'Done'
 					})
+				else:
+					for row in dn_doc.items:
+						mv_doc.append('purposes', {
+							'item_code': row.item_code,
+							'item_name': row.item_name,
+							'item_group': row.item_group,
+							'description': row.description,
+							'selco_quantity': row.qty,
+							'service_person': d.sales_person,
+							'selco_service_person': frappe.db.get_value("Sales Invoice",doc.sales_invoice,'service_person'),
+							'selco_number_of_years':frappe.db.get_value("Item", d.item_code,'selco_warranty_period'),
+							'work_done': 'Done'
+						})
 		else:
 			mv_doc.append('purposes', {
 				'item_code': sales_invoice.items[0].item_code,
@@ -684,20 +700,25 @@ def make_maintenance_visit(doc):
 		mv_doc.save(ignore_permissions=True)
 		frappe.msgprint(_("Maintenance Visit {0} created").format(get_link_to_form("Maintenance Visit", mv_doc.name)))
 
-		
+
 def selco_maintenance_schedule_cancel(doc, method):
 	delete_auto_created_maintenance_visit(doc)
 
 def delete_auto_created_maintenance_visit(doc):
-	for row in frappe.get_all("Maintenance Visit", filters={'docstatus': 2,"maintenance_schedule": doc.name}):
-		frappe.delete_doc("Maintenance Visit", row.name)
+	for row in frappe.get_all("Maintenance Visit",
+		filters={"docstatus": ("<", 2), "maintenance_schedule": doc.name}):
+		mv_doc = frappe.get_doc("Maintenance Visit",row.name)
+		if mv_doc.docstatus == 1:
+			mv_doc.cancel()
+
+		mv_doc.delete()
 
 def selco_delivery_note_submit(doc, method):
 	create_installation_note(doc)
 
 def create_installation_note(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
-	
+
 	if (not doc.is_return and ms_doc.selco_auto_create_installation_note and not ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and doc.selco_type_of_invoice == "System Sales Invoice") or (ms_doc.selco_auto_create_installation_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note and ms_doc.selco_allow_role_to_make_installation_note_from_delivery_note in frappe.get_roles(frappe.session.user)):
 		installation_note = make_installation_note(doc.name)
 		installation_note.inst_date = doc.posting_date
