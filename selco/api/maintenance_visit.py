@@ -59,6 +59,8 @@ def get_maintenance_visit():
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
 		parent_dict['purposes'] = frappe.db.get_values("Maintenance Visit Purpose",{'parenttype':'Maintenance Visit','parent':row.name},child_fields, as_dict=True)
+		if parent_dict['mntc_date']:
+			parent_dict['mntc_date'] = parent_dict['mntc_date'].strftime("%m-%d-%Y")
 		data_list.append(parent_dict)
 
 	return data_list
