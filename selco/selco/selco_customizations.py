@@ -155,6 +155,7 @@ def selco_service_record_validate(doc,method):
 
 def selco_service_record_submit(doc,method):
 	update_issue(doc)
+	doc.db_set('selco_cse_date', today())
 
 def selco_service_record_cancel(doc,method):
 	delete_service_record_from_issue_child_table(doc)
@@ -1195,6 +1196,12 @@ def selco_maintenance_visit_validate(doc, method):
 	set_modified_by(doc)
 	calc_total_mv(doc)
 	update_contact(doc, doc.customer)
+
+def selco_maintenance_visit_on_submit(self, method):
+	self.db_set('selco_cse_date', today())
+
+def selco_installation_note_on_submit(self, method):
+	self.db_set('selco_cse_date', today())
 
 def calc_total_mv(doc):
 	total = 0

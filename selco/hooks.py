@@ -79,6 +79,7 @@ doc_events = {
 	 },
 	 "Maintenance Visit":{
 		 "validate": "selco.selco.selco_customizations.selco_maintenance_visit_validate",
+		 "on_submit": "selco.selco.selco_customizations.selco_maintenance_visit_on_submit",
 	 },
 	 # "Address":{
 	 #      "before_insert": "selco.selco.selco_customizations.selco_address_before_insert"
@@ -94,6 +95,7 @@ doc_events = {
 	 },
 	 "Installation Note":{
 		"validate": "selco.selco.selco_customizations.selco_installation_note_validate",
+		"on_submit": "selco.selco.selco_customizations.selco_installation_note_on_submit",
 	 }
  }
 

@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe import _
-from frappe.utils import add_days, getdate, nowdate
+from frappe.utils import add_days, getdate, nowdate, today
 
 # @frappe.whitelist()
 # def get_installation_note():
@@ -81,6 +81,7 @@ def update_installation_note():
 		update_child_records(request_data, doc)
 		doc.save()
 		if doc.get('submitted'):
+			doc.db_set('selco_cse_date', today())
 			doc.submit()
 		frappe.db.commit()
 		doc.reload()
