@@ -119,7 +119,6 @@ def on_update(doc,method):
 def autocreate_service_record(doc):
 	ms_doc = frappe.get_doc("Maintenance Settings Template", "Maintenance Settings Template")
 	if ms_doc.selco_auto_create_service_record and doc.workflow_state == "Complaint Assigned To CSE" and not frappe.db.exists("Service Record",{'selco_complaint_number':doc.name,'auto_created': 1,'docstatus':['!=',2]}):
-		frappe.msgprint(str(doc.workflow_state))
 		service_record = frappe.new_doc("Service Record")
 		service_record.selco_branch = doc.selco_branch
 		service_record.selco_customer_id = doc.selco_customer_id
@@ -193,13 +192,14 @@ def update_issue(doc):
 
 def delete_service_record_from_issue_child_table(doc):
 	if doc.selco_complaint_number:
-		issue_doc = frappe.get_doc("Issue",doc.selco_complaint_number)
-		to_remove = []
-		for row in issue_doc.selco_service_record:
-			if row.service_record_no == doc.name:
-				to_remove.append(row)
-		[issue_doc.remove(d) for d in to_remove]
-		issue_doc.save(ignore_permissions=True)
+		frappe.db.sql(f"delete from `tabService Record Details Issue` where service_record_no='{doc.name}' and parent = '{doc.selco_complaint_number}' ")
+		# issue_doc = frappe.get_doc("Issue",doc.selco_complaint_number)
+		# to_remove = []
+		# for row in issue_doc.selco_service_record:
+		# 	if row.service_record_no == doc.name:
+		# 		to_remove.append(row)
+		# [issue_doc.remove(d) for d in to_remove]
+		# issue_doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
