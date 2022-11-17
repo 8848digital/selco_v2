@@ -82,7 +82,11 @@ def update_installation_note():
 		try:
 			doc.save()
 		except Exception as e:
-			doc.db_set("api_error_message",str(e))
+			error_msg_doc = frappe.new_doc("API Error Log")
+			error_msg_doc.reference_doctype = doc.doctype
+			error_msg_doc.reference_docname = doc.name
+			error_msg_doc.error_message = str(e)
+			error_msg_doc.save(ignore_permissions=True)
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
 			doc.submit()
