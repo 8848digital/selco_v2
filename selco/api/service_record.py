@@ -92,7 +92,14 @@ def update_service_record():
 			error_msg_doc.save(ignore_permissions=True)
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
-			doc.submit()
+			try:
+				doc.submit()
+			except Exception as e:
+				error_submit_msg_doc = frappe.new_doc("API Error Log")
+				error_submit_msg_doc.reference_doctype = doc.doctype
+				error_submit_msg_doc.reference_docname = doc.name
+				error_submit_msg_doc.error_message = str(e)
+				error_submit_msg_doc.save(ignore_permissions=True)
 		frappe.db.commit()
 		doc.reload()
 		return doc
