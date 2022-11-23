@@ -15,89 +15,106 @@ override_doctype_class = {"Maintenance Schedule": "selco.selco.custom_maintenanc
 
 
 doc_events = {
-		"*": {
-				 "validate": "selco.selco.selco_customizations.validate_back_dated_entries"
-		},
-		"Issue": {
-				 "before_insert":"selco.selco.selco_customizations.selco_issue_before_insert",
-				 "validate": "selco.selco.selco_customizations.selco_issue_validate1",
-				 "on_update": "selco.selco.selco_customizations.on_update"
-		},
-		"Warranty Claim": {
-					"validate": "selco.selco.selco_customizations.selco_warranty_claim_validate"
-		},
-		"Material Request": {
-					 "validate":"selco.selco.selco_customizations.selco_material_request_validate",
-					 "before_insert":"selco.selco.selco_customizations.selco_material_request_before_insert"
-		},
-		"Purchase Receipt":{
-							"before_insert":"selco.selco.selco_customizations.selco_purchase_receipt_before_insert",
-							"validate":"selco.selco.selco_customizations.selco_purchase_receipt_validate"
-		},
-		"Payment Entry":{
-							"before_insert":"selco.selco.selco_customizations.selco_payment_entry_before_insert",
-							"validate":"selco.selco.selco_customizations.selco_payment_entry_validate"
-		},
-			"Lead":{
-						"before_insert":"selco.selco.selco_customizations.selco_lead_before_insert",
-						"validate":"selco.selco.selco_customizations.selco_lead_validate"
-
-			},
-			"Customer":{
-						"before_insert":"selco.selco.selco_customizations.selco_customer_before_insert",
-						"validate":"selco.selco.selco_customizations.selco_customer_validate"
-		 },
-		 "Journal Entry":{
-						 "before_insert":"selco.selco.selco_customizations.selco_journal_entry_before_insert",
-						 "validate":"selco.selco.selco_customizations.selco_journal_entry_validate"
-		 },
-		 "Delivery Note":{
-						 "before_insert":"selco.selco.selco_customizations.selco_delivery_note_before_insert",
-						 "validate":"selco.selco.selco_customizations.selco_delivery_note_validates",
-						 "on_submit": "selco.selco.selco_customizations.selco_delivery_note_submit"
-		 },
-		 "Sales Invoice":{
-						 "before_insert": "selco.selco.selco_customizations.selco_sales_invoice_before_insert",
-						 "validate": "selco.selco.selco_customizations.selco_sales_invoice_validate",
-						 "on_submit": "selco.selco.selco_customizations.selco_sales_invoice_submit",
-						 "on_cancel": "selco.selco.selco_customizations.selco_sales_invoice_cancel"
-		 },
-		 "Purchase Invoice":{
-						 "before_insert":"selco.selco.selco_customizations.selco_purchase_invoice_before_insert",
-						 "validate":"selco.selco.selco_customizations.selco_purchase_invoice_validate"
-		 },
-		 "Stock Entry":{
-				 "before_insert": "selco.selco.selco_customizations.selco_stock_entry_updates",
-				 "before_validate": "selco.selco.selco_customizations.selco_stock_entry_updates",
-				 "validate": ["selco.selco.selco_customizations.selco_stock_entry_validate"],
-				 "on_submit": "selco.selco.selco_customizations.stock_entry_reference_qty_update",
-				 "on_cancel": "selco.selco.selco_customizations.stock_entry_reference_qty_update"
-	 },
-	 "Maintenance Schedule":{
-		 "on_submit": "selco.selco.selco_customizations.selco_maintenance_schedule_submit",
-		 "on_cancel": "selco.selco.selco_customizations.selco_maintenance_schedule_cancel"
-	 },
-	 "Maintenance Visit":{
-		 "validate": "selco.selco.selco_customizations.selco_maintenance_visit_validate",
-		 "on_submit": "selco.selco.selco_customizations.selco_maintenance_visit_on_submit",
-	 },
-	 # "Address":{
-	 #      "before_insert": "selco.selco.selco_customizations.selco_address_before_insert"
-	 # },
-		"Purchase Order":{
-						"before_insert":"selco.selco.selco_customizations.selco_purchase_order_before_insert",
-						"validate": "selco.selco.selco_customizations.selco_purchase_order_validate"
+	"*": {
+		"validate": "selco.selco.selco_customizations.validate_back_dated_entries"
 	},
-	 "Service Record":{
-		 "validate": "selco.selco.selco_customizations.selco_service_record_validate",
-		 "on_submit": "selco.selco.selco_customizations.selco_service_record_submit",
-		 "on_cancel": "selco.selco.selco_customizations.selco_service_record_cancel"
-	 },
-	 "Installation Note":{
+
+	"Issue": {
+		"before_insert":"selco.selco.selco_customizations.selco_issue_before_insert",
+		"validate": "selco.selco.selco_customizations.selco_issue_validate1",
+		"on_update": "selco.selco.selco_customizations.on_update",
+		"on_cancel": "selco.selco.custom_issue.on_cancel_event"
+	},
+
+	"Warranty Claim": {
+		"validate": "selco.selco.selco_customizations.selco_warranty_claim_validate"
+	},
+
+	"Material Request": {
+		"validate":"selco.selco.selco_customizations.selco_material_request_validate",
+		"before_insert":"selco.selco.selco_customizations.selco_material_request_before_insert"
+	},
+
+	"Purchase Receipt": {
+		"before_insert":"selco.selco.selco_customizations.selco_purchase_receipt_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_purchase_receipt_validate"
+	},
+
+	"Payment Entry": {
+		"before_insert":"selco.selco.selco_customizations.selco_payment_entry_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_payment_entry_validate"
+	},
+
+	"Lead": {
+		"before_insert":"selco.selco.selco_customizations.selco_lead_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_lead_validate"
+
+	},
+
+	"Customer": {
+		"before_insert":"selco.selco.selco_customizations.selco_customer_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_customer_validate"
+	},
+
+	"Journal Entry": {
+		"before_insert":"selco.selco.selco_customizations.selco_journal_entry_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_journal_entry_validate"
+	},
+
+	"Delivery Note": {
+		"before_insert":"selco.selco.selco_customizations.selco_delivery_note_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_delivery_note_validates",
+		"on_submit": "selco.selco.selco_customizations.selco_delivery_note_submit",
+		"on_cancel": "selco.selco.custom_delivery_note.on_cancel_event"
+	},
+
+	"Sales Invoice": {
+		"before_insert": "selco.selco.selco_customizations.selco_sales_invoice_before_insert",
+		"validate": "selco.selco.selco_customizations.selco_sales_invoice_validate",
+		"on_submit": "selco.selco.selco_customizations.selco_sales_invoice_submit",
+		"on_cancel": "selco.selco.selco_customizations.selco_sales_invoice_cancel"
+	},
+
+	"Purchase Invoice": {
+		"before_insert":"selco.selco.selco_customizations.selco_purchase_invoice_before_insert",
+		"validate":"selco.selco.selco_customizations.selco_purchase_invoice_validate"
+	},
+
+	"Stock Entry": {
+		"before_insert": "selco.selco.selco_customizations.selco_stock_entry_updates",
+		"before_validate": "selco.selco.selco_customizations.selco_stock_entry_updates",
+		"validate": ["selco.selco.selco_customizations.selco_stock_entry_validate"],
+		"on_submit": "selco.selco.selco_customizations.stock_entry_reference_qty_update",
+		"on_cancel": "selco.selco.selco_customizations.stock_entry_reference_qty_update"
+	},
+
+	"Maintenance Schedule": {
+		"on_submit": "selco.selco.selco_customizations.selco_maintenance_schedule_submit",
+		"on_cancel": "selco.selco.selco_customizations.selco_maintenance_schedule_cancel"
+	},
+
+	"Maintenance Visit": {
+		"validate": "selco.selco.selco_customizations.selco_maintenance_visit_validate",
+		"on_submit": "selco.selco.selco_customizations.selco_maintenance_visit_on_submit",
+	},
+
+	"Purchase Order": {
+		"before_insert":"selco.selco.selco_customizations.selco_purchase_order_before_insert",
+		"validate": "selco.selco.selco_customizations.selco_purchase_order_validate"
+	},
+
+	"Service Record": {
+		"validate": "selco.selco.selco_customizations.selco_service_record_validate",
+		"on_submit": "selco.selco.selco_customizations.selco_service_record_submit",
+		"on_cancel": ["selco.selco.selco_customizations.selco_service_record_cancel",
+			"selco.selco.custom_service_record.on_cancel_event"]
+	},
+
+	"Installation Note": {
 		"validate": "selco.selco.selco_customizations.selco_installation_note_validate",
 		"on_submit": "selco.selco.selco_customizations.selco_installation_note_on_submit",
-	 }
- }
+	}
+}
 
 # scheduler_events = {
 #     "all": [
