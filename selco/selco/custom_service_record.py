@@ -14,7 +14,7 @@ def update_issue_status(doc):
 				"workflow_state", "Complaint Assigned to CSE")
 
 			frappe.db.sql("""
-				DELETE `tabService Record Details Issue`
+				DELETE FROM `tabService Record Details Issue`
 					where service_record_no = %s
 			""", doc.name)
 
