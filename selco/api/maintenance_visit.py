@@ -63,7 +63,7 @@ def get_maintenance_visit():
 		# 	parent_dict['mntc_date'] = parent_dict['mntc_date'].strftime("%d-%m-%Y")
 		data_list.append(parent_dict)
 
-	return data_list
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_maintenance_visit():
@@ -104,6 +104,8 @@ def update_maintenance_visit():
 			error_msg_doc.reference_docname = doc.name
 			error_msg_doc.error_message = str(e)
 			error_msg_doc.save(ignore_permissions=True)
+			return {'status': "Fail", "message": str(e)}
+
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
 			try:
@@ -114,9 +116,10 @@ def update_maintenance_visit():
 				error_submit_msg_doc.reference_docname = doc.name
 				error_submit_msg_doc.error_message = str(e)
 				error_submit_msg_doc.save(ignore_permissions=True)
+				return {'status': "Fail", "message": str(e)}
 		frappe.db.commit()
 		doc.reload()
-		return doc
+		return {'status': "Success", "data": doc}
 
 def update_child_records(request_data,doc):
 	if request_data.get("purposes"):

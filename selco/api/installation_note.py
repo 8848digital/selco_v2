@@ -47,7 +47,7 @@ def get_installation_note():
 		parent_dict['packed_items'] = frappe.db.get_values("Packed Item",{'parenttype':'Installation Note','parent':row.name},child_fields, as_dict=True)
 		data_list.append(parent_dict)
 
-	return data_list
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_installation_note():
@@ -87,6 +87,7 @@ def update_installation_note():
 			error_msg_doc.reference_docname = doc.name
 			error_msg_doc.error_message = str(e)
 			error_msg_doc.save(ignore_permissions=True)
+			return {'status': "Fail", "message": str(e)}
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
 			try:
@@ -97,9 +98,10 @@ def update_installation_note():
 				error_submit_msg_doc.reference_docname = doc.name
 				error_submit_msg_doc.error_message = str(e)
 				error_submit_msg_doc.save(ignore_permissions=True)
+				return {'status': "Fail", "message": str(e)}
 		frappe.db.commit()
 		doc.reload()
-		return doc
+		return {'status': "Success", "data": doc}
 
 def update_child_records(request_data, doc):
 	if request_data.get("packed_items"):

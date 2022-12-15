@@ -50,7 +50,7 @@ def get_service_record():
 		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, order_by = 'idx',as_dict=True)
 		data_list.append(parent_dict)
 
-	return data_list
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_service_record():
@@ -90,6 +90,7 @@ def update_service_record():
 			error_msg_doc.reference_docname = doc.name
 			error_msg_doc.error_message = str(e)
 			error_msg_doc.save(ignore_permissions=True)
+			return {'status': "Fail", "message": str(e)}
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
 			try:
@@ -100,9 +101,10 @@ def update_service_record():
 				error_submit_msg_doc.reference_docname = doc.name
 				error_submit_msg_doc.error_message = str(e)
 				error_submit_msg_doc.save(ignore_permissions=True)
+				return {'status': "Fail", "message": str(e)}
 		frappe.db.commit()
 		doc.reload()
-		return doc
+		return {'status': "Success", "data": doc}
 
 def update_child_records(request_data, doc):
 	if request_data.get("selco_fault_rectified_and_replacement_detail"):
