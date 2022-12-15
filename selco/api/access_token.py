@@ -7,7 +7,7 @@ def get_access_api_token(usr, pwd):
 	try:
 		check_password(usr,pwd)
 	except Exception as e:
-		return e
+		return {'status': 'Fail','message': str(e)}
 	doc = frappe.get_doc("User", {'name':usr})
 	api_key = doc.api_key
 	api_secret = doc.get_password('api_secret')
@@ -15,4 +15,4 @@ def get_access_api_token(usr, pwd):
 		api_token = "token "+api_key+":"+api_secret
 		access_api_token = {"access_token": api_token,'email':usr}
 			
-	return access_api_token 
+	return {'status': 'Success','data': access_api_token} 
