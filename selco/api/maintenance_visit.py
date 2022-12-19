@@ -46,34 +46,24 @@ def get_maintenance_visit():
 		else:
 			data = frappe.get_list("Maintenance Visit",{'docstatus':['!=',2]})
 	else:
-		data_1 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],'status':"Draft","completion_status":"Partially Completed",'mntc_date':["<=",future_mntc_date]},order_by="name desc")
-		data_2 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],"completion_status":"Fully Completed",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]},order_by="name desc")
-		#data = data_1 + data_2
+		data_1 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],'status':"Draft","completion_status":"Partially Completed",'mntc_date':["<=",future_mntc_date]})
+		data_2 = frappe.get_list("Maintenance Visit",{"docstatus":["!=",2],"completion_status":"Fully Completed",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]})
+		data = data_1 + data_2
 		
+	data_list = []
 	parent_fields = ['name','selco_branch','customer','customer_name','address_display','selco_customer_contact_number','selco_customer_landline_number','selco_payment_entry_number','mntc_date','completion_status','maintenance_type','status','selco_total_component_charges_collected','selco_service_charges_collected','selco_total_amount','selco_cse_remarks','selco_cse_feedback','selco_signature_of_the_customer','selco_cse_signature','selco_signature_of_the_cse','selco_cse_location','selco_customer_remarks','selco_customer_feedback','customer_address','selco_customers_signature','naming_series','maintenance_schedule','maintenance_schedule_detail','mntc_time','company','customer_group','selco_taluk','selco_sales_person','selco_service_person','selco_customer_date','selco_cse_date','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','was_created_by','was_submitted_by','submitted_by_mobile','api_error_message']	
 	child_fields = ['name','idx','parent','parenttype','item_code','selco_item_group','item_name','selco_make','selco_quantity','selco_serial_number','selco_specs','service_person','description','work_done','selco_collected_amount']
  
-	data_list_draft = []
-	data_list_completed = []
-
-	for row in data_1:
+	for row in data:
 		parent_dict = frappe.db.get_value("Maintenance Visit",row.name,parent_fields, as_dict=True)
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
 		parent_dict['purposes'] = frappe.db.get_values("Maintenance Visit Purpose",{'parenttype':'Maintenance Visit','parent':row.name},child_fields, as_dict=True)
 		# if parent_dict['mntc_date']:
 		# 	parent_dict['mntc_date'] = parent_dict['mntc_date'].strftime("%d-%m-%Y")
-		data_list_draft.append(parent_dict)
+		data_list.append(parent_dict)
 
-	for row in data_2:
-		parent_dict = frappe.db.get_value("Maintenance Visit",row.name,parent_fields, as_dict=True)
-		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
-		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
-		parent_dict['purposes'] = frappe.db.get_values("Maintenance Visit Purpose",{'parenttype':'Maintenance Visit','parent':row.name},child_fields, as_dict=True)
-		
-		data_list_completed.append(parent_dict)
-
-	return {'status': "Success","data": {'draft_count': len(data_list_draft),'draft_data':data_list_draft,'completed_count': len(data_list_completed),'completed_data':data_list_completed}}
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_maintenance_visit():

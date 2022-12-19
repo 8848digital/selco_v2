@@ -35,30 +35,22 @@ def get_service_record():
 		else:
 			data = frappe.get_list("Service Record",{'docstatus':['!=',2]})
 	else:
-		data_1 = frappe.get_list("Service Record",{'docstatus':0},order_by="name desc")
-		data_2 = frappe.get_list("Service Record",{'docstatus':1,'selco_job_status':'Complete','selco_posting_date':["<=",nowdate()],'selco_posting_date':[">=",past_selco_posting_date]},order_by="name desc")
-		#data = data_1 + data_2
+		data_1 = frappe.get_list("Service Record",{'docstatus':0})
+		data_2 = frappe.get_list("Service Record",{'docstatus':1,'selco_job_status':'Complete','selco_posting_date':["<=",nowdate()],'selco_posting_date':[">=",past_selco_posting_date]})
+		data = data_1 + data_2
 
+	data_list = []
 	parent_fields = ['name','selco_complaint_date','docstatus','selco_customer_feedback','selco_service_charge_collected','selco_total_component_charges_collected','selco_total_amount','selco_detail_address','selco_customer_address','selco_customer_remarks','selco_customer_signature','selco_customer_date','selco_landline_mobile_2','selco_cse_location','selco_branch','selco_posting_date','selco_cse_feedback','selco_job_status','selco_cse_name','selco_customer_contact_number','selco_signature_of_the_cse','selco_cse_signature','selco_signature_of_the_customer','selco_customer_id','selco_cse_remarks','selco_complaint_number','selco_cse_date','selco_customer_full_name','selco_type_of_service_attended','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','selco_sales_invoice_number','selco_sales_invoice_date','was_created_by','was_submitted_by','selco_issue_status','submitted_by_mobile']
 	child_fields = ['name','idx','parent','parenttype','selco_within_warranty','selco_serial_number','selco_collected_amount','selco_make','selco_item','selco_item_name','selco_specs','selco_item_code','selco_remarks']
  
-	data_list_draft = []
-	data_list_submitted = []
-
-	for row in data_1:
+	for row in data:
 		parent_dict = frappe.db.get_value("Service Record",row.name,parent_fields, as_dict=True)
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_local_area')
 		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, order_by = 'idx',as_dict=True)
-		data_list_draft.append(parent_dict)
-	for row in data_2:
-		parent_dict = frappe.db.get_value("Service Record",row.name,parent_fields, as_dict=True)
-		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_taluk')
-		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_local_area')
-		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, order_by = 'idx',as_dict=True)
-		data_list_submitted.append(parent_dict)
+		data_list.append(parent_dict)
 
-	return {'status': "Success","data": {'draft_count': len(data_list_draft),'draft_data':data_list_draft,'submitted_count': len(data_list_submitted),'submitted_data':data_list_submitted}}
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_service_record():

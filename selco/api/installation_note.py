@@ -32,29 +32,22 @@ def get_installation_note():
 		else:
 			data = frappe.get_list("Installation Note",{'docstatus':['!=',2]})
 	else:
-		data_1 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Draft"},order_by="name desc")
-		data_2 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Submitted",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]},order_by="name desc")
-		#data = data_1 + data_2
+		data_1 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Draft"})
+		data_2 = frappe.get_list("Installation Note",{'docstatus':['!=',2],'status':"Submitted",'selco_cse_date':["<=",nowdate()],'selco_cse_date':[">=",past_selco_cse_date]})
+		data = data_1 + data_2
 
+	data_list = []
 	parent_fields = ['name','selco_branch','naming_series','status','selco_service_person','selco_payment_entry_number','customer_group','customer','customer_name','territory','customer_address','address_display','selco_customer_contact_number','selco_landline_mobile_2','selco_sales_person','selco_warranty_terms1','inst_date','selco_installation_start_date','selco_installation_end_date','inst_time','selco_delivery_note_date','selco_electrification_status','selco_concealed','selco_piping','selco_cnc','selco_length_of_hot_water_line','selco_length_of_cold_water_line','selco_taps','selco_non_return_valves','selco_gate_valve','selco_oht_height','selco_customer_remarks','selco_customer_feedback','selco_cse_remarks','selco_cse_feedback','selco_cse_name','selco_cse_name_1','selco_signature_of_customer','selco_cse_date','selco_customer_name','selco_custmer_date','selco_terms_and_conditions','selco_cse_location','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','was_created_by','was_submitted_by','submitted_by_mobile']
 	child_fields = ['name','idx','parent','parenttype','item_code','item_name','selco_make','description','selco_number_of_years','selco_item_group','qty','uom','selco_serial_number']
  
-	data_list_draft = []
-	data_list_submitted = []
-	for row in data_1:
+	for row in data:
 		parent_dict = frappe.db.get_value("Installation Note",row.name,parent_fields, as_dict=True)
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
 		parent_dict['packed_items'] = frappe.db.get_values("Packed Item",{'parenttype':'Installation Note','parent':row.name},child_fields, as_dict=True)
-		data_list_draft.append(parent_dict)
-	for row in data_2:
-		parent_dict = frappe.db.get_value("Installation Note",row.name,parent_fields, as_dict=True)
-		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
-		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
-		parent_dict['packed_items'] = frappe.db.get_values("Packed Item",{'parenttype':'Installation Note','parent':row.name},child_fields, as_dict=True)
-		data_list_submitted.append(parent_dict)
+		data_list.append(parent_dict)
 
-	return {'status': "Success","data": {'draft_count': len(data_list_draft),'draft_data':data_list_draft,'submitted_count': len(data_list_submitted),'submitted_data':data_list_submitted}}
+	return {'status': "Success","data": data_list}
 
 @frappe.whitelist(methods=["PUT"])
 def update_installation_note():
