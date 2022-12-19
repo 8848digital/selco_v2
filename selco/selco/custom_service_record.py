@@ -13,6 +13,9 @@ def update_issue_status(doc):
 			frappe.db.set_value("Issue", doc.selco_complaint_number,
 				"workflow_state", "Complaint Assigned to CSE")
 
+			frappe.db.set_value("Issue", doc.selco_complaint_number,
+				"status", "Open")
+
 			frappe.db.sql("""
 				DELETE FROM `tabService Record Details Issue`
 					where service_record_no = %s
