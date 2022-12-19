@@ -56,7 +56,7 @@ def get_service_record():
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['selco_customer_address'],'selco_local_area')
 		parent_dict['selco_fault_rectified_and_replacement_detail'] = frappe.db.get_values("Service Record Item Details",{'parenttype':'Service Record','parent':row.name},child_fields, order_by = 'idx',as_dict=True)
-		data_list_draft.append(parent_dict)
+		data_list_submitted.append(parent_dict)
 
 	return {'status': "Success","data": {'draft_count': len(data_list_draft),'draft_data':data_list_draft,'submitted_count': len(data_list_submitted),'submitted_data':data_list_submitted}}
 
