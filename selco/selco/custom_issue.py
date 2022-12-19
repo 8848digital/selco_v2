@@ -5,7 +5,7 @@ def on_cancel_event(doc, method=None):
 
 def cancel_delete_service_record(doc):
 	if doc.workflow_state == "Complaint Assigned To CSE":
-		data = get_service_record(doc.name, {"docstatus": 0})
+		data = get_service_record(doc.name, {"docstatus": ("!=", 1)})
 		delete_service_record(data)
 	elif doc.workflow_state in ["Complaint Closed By CSD", "Complaint Closed By Branch"]:
 		data = get_service_record(doc.name, {"docstatus": 1})
