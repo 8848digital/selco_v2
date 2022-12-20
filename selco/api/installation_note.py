@@ -44,7 +44,7 @@ def get_installation_note():
 		parent_dict = frappe.db.get_value("Installation Note",row.name,parent_fields, as_dict=True)
 		parent_dict['selco_taluk'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_taluk')
 		parent_dict['selco_local_area'] = frappe.db.get_value("Address",parent_dict['customer_address'],'selco_local_area')
-		parent_dict['packed_items'] = frappe.db.get_values("Packed Item",{'parenttype':'Installation Note','parent':row.name},child_fields, as_dict=True)
+		parent_dict['packed_items'] = frappe.db.get_values("Packed Item",{'parenttype':'Installation Note','parent':row.name},child_fields, orber_by="idx",as_dict=True)
 		data_list.append(parent_dict)
 
 	return {'status': "Success","data": data_list}
