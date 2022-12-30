@@ -22,8 +22,8 @@ doc_events = {
 	"Issue": {
 		"before_insert":"selco.selco.selco_customizations.selco_issue_before_insert",
 		"validate": "selco.selco.selco_customizations.selco_issue_validate1",
-		"on_update": "selco.selco.selco_customizations.on_update",
-		"on_cancel": "selco.selco.custom_issue.on_cancel_event"
+		"on_update": ["selco.selco.selco_customizations.on_update",
+			"selco.selco.custom_issue.on_cancel_event"],
 	},
 
 	"Warranty Claim": {
