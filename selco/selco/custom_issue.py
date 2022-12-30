@@ -1,7 +1,8 @@
 import frappe
 
 def on_cancel_event(doc, method=None):
-	cancel_delete_service_record(doc)
+	if doc.workflow_state == "Complaint Cancelled":
+		cancel_delete_service_record(doc)
 
 def cancel_delete_service_record(doc):
 	data = get_service_record(doc.name, {"docstatus": ("!=", 1)})
