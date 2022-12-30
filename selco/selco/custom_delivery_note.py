@@ -1,8 +1,7 @@
 import frappe
 
 def on_cancel_event(doc, method=None):
-	if doc.status in ["Completed", "To Bill"]:
-		delete_installation_note(doc)
+	delete_installation_note(doc)
 
 def delete_installation_note(doc):
 	data = frappe.get_all("Installation Note Item",
