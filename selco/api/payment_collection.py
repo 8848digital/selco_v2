@@ -10,6 +10,20 @@ def get_payment_collection():
 	if data_list:
 		return {'status': "Success","data": data_list}
 
+@frappe.whitelist()
+def create_payment_collection():
+	if frappe.request.data:
+		request_data = json.loads(frappe.request.data)
+		if not request_data.get("branch"):
+			frappe.throw("Define branch to create the record.")
+		if not frappe.db.exists("Branch",request_data.get("branch")):
+			frappe.throw("Branch not exist.")
+		doc = frappe.new_doc("Payment Collection Form")
+		doc.selco_branch = request_data.get("branch")
+		doc.save(ignore_permissions=True)
+		frappe.db.commit()
+		return {'status': "Success", "data": doc.name}
+
 @frappe.whitelist(methods=["PUT"])
 def update_payment_collection():
 	if frappe.request.data:
