@@ -49,6 +49,7 @@ def update_payment_collection():
 				else:
 					doc.db_set(field, request_data.get(field))
 		try:
+			doc.selco_customer_date = doc.selco_cse_date
 			doc.save()
 		except Exception as e:
 			error_msg_doc = frappe.new_doc("API Error Log")

@@ -88,7 +88,7 @@ def update_maintenance_visit():
 			frappe.throw("Maintenance Visit {} is Cancelled.Can not edit cancelled document".format(request_data.get("name")))
 		# if doc.completion_status == "Fully Completed":
 		# 	frappe.throw("Maintenance Visit {} is Fully Completed.".format(request_data.get("name")))
-		parent_field_list = ['completion_status','selco_customer_contact_number','selco_customer_landline_number','selco_service_charges_collected','selco_cse_remarks','selco_cse_feedback','selco_cse_signature','selco_cse_location','selco_customer_remarks','selco_customer_feedback','selco_customers_signature','submitted','selco_service_person','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','submitted_by_mobile']
+		parent_field_list = ['completion_status','selco_customer_contact_number','selco_customer_landline_number','selco_service_charges_collected','selco_cse_remarks','selco_cse_feedback','selco_cse_signature','selco_cse_location','selco_customer_remarks','selco_customer_feedback','selco_customers_signature','submitted','selco_service_person','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','submitted_by_mobile','selco_cse_date']
 		for field in parent_field_list:
 			if request_data.get(field):
 				if field == "submitted":
@@ -97,6 +97,7 @@ def update_maintenance_visit():
 					doc.db_set(field, request_data.get(field))
 		update_child_records(request_data,doc)
 		try:
+			doc.selco_customer_date = doc.selco_cse_date
 			doc.save()
 		except Exception as e:
 			error_msg_doc = frappe.new_doc("API Error Log")

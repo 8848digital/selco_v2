@@ -71,7 +71,7 @@ def update_installation_note():
 		if doc.docstatus == 2:
 			frappe.throw("Installation Note {} is Cancelled.Can not edit cancelled document".format(request_data.get("name")))
 		
-		parent_field_list = ['selco_service_person','selco_customer_contact_number','selco_landline_mobile_2','selco_installation_start_date','selco_installation_end_date','selco_electrification_status','selco_concealed','selco_piping','selco_cnc','selco_length_of_hot_water_line','selco_length_of_cold_water_line','selco_taps','selco_non_return_valves','selco_gate_valve','selco_oht_height','selco_customer_remarks','selco_customer_feedback','selco_cse_remarks','selco_cse_feedback','selco_cse_name','selco_customer_name','selco_cse_location','submitted','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','submitted_by_mobile','api_error_message']
+		parent_field_list = ['selco_service_person','selco_customer_contact_number','selco_landline_mobile_2','selco_installation_start_date','selco_installation_end_date','selco_electrification_status','selco_concealed','selco_piping','selco_cnc','selco_length_of_hot_water_line','selco_length_of_cold_water_line','selco_taps','selco_non_return_valves','selco_gate_valve','selco_oht_height','selco_customer_remarks','selco_customer_feedback','selco_cse_remarks','selco_cse_feedback','selco_cse_name','selco_customer_name','selco_cse_location','submitted','selco_service_person_2','selco_service_person_3','selco_service_person_4','selco_service_person_5','submitted_by_mobile','api_error_message','selco_cse_date']
 		for field in parent_field_list:
 				if request_data.get(field):
 					if field == "submitted":
@@ -80,6 +80,7 @@ def update_installation_note():
 						doc.db_set(field, request_data.get(field))
 		update_child_records(request_data, doc)
 		try:
+			doc.selco_custmer_date = doc.selco_cse_date
 			doc.save()
 		except Exception as e:
 			error_msg_doc = frappe.new_doc("API Error Log")

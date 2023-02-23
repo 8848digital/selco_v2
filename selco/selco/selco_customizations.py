@@ -640,7 +640,7 @@ def make_maintenance_visit(doc):
 		mv_doc.contact_display = doc.contact_display
 		mv_doc.maintenance_type = "Scheduled"
 		#mv_doc.mntc_date = d.scheduled_date
-		mv_doc.sales_invoice = doc.sales_invoice
+		mv_doc.sales_invoice_ref = doc.sales_invoice
 		mv_doc.completion_status = "Partially Completed"
 		mv_doc.maintenance_schedule = doc.name
 		mv_doc.maintenance_schedule_detail = d.name
