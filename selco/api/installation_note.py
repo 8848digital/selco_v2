@@ -91,6 +91,7 @@ def update_installation_note():
 			return {'status': "Fail", "message": str(e)}
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
+			doc.db_set('selco_custmer_date', today())
 			doc.db_set('status', "Submitted")
 			try:
 				doc.submit()

@@ -109,6 +109,7 @@ def update_maintenance_visit():
 
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
+			doc.db_set('selco_customer_date', today())
 			try:
 				doc.submit()
 			except Exception as e:

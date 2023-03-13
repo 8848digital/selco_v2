@@ -94,6 +94,7 @@ def update_service_record():
 			return {'status': "Fail", "message": str(e)}
 		if doc.get('submitted'):
 			doc.db_set('selco_cse_date', today())
+			doc.db_set('selco_customer_date', today())
 			try:
 				doc.submit()
 			except Exception as e:
