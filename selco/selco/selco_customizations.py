@@ -12,7 +12,7 @@ from erpnext.accounts.party import get_party_account, get_due_date
 from datetime import datetime
 from datetime import timedelta
 from frappe.utils import cint, getdate, add_days, add_months, date_diff, today
-from erpnext.hr.doctype.employee.employee import get_holiday_list_for_employee
+from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
 from erpnext.stock.doctype.delivery_note.delivery_note import make_installation_note
 
 class SelcoCustomizations(Document):
