@@ -205,12 +205,24 @@ def delete_service_record_from_issue_child_table(doc):
 @frappe.whitelist()
 def selco_delivery_note_validates(doc,method):
 	set_created_by(doc)
-	selco_warehouse, selco_cost_center = frappe.get_cached_value("Branch",
-		doc.selco_branch, ["selco_warehouse", "selco_cost_center"])
+	branch_data = frappe.db.get_value("Branch",
+		doc.selco_branch,
+		["selco_warehouse", "selco_cost_center", "selco_extra_item_warehouse"],
+		as_dict=True
+	)
 
 	for d in doc.get('items'):
-		d.warehouse = selco_warehouse
-		d.cost_center = selco_cost_center
+		d.warehouse = branch_data.selco_warehouse
+		d.cost_center = branch_data.selco_cost_center
+		if d.selco_warranty_free_item:
+			if not doc.selco_branch:
+				frappe.throw(_("Please set Branch in Purchase Receipt {0}").format(doc.name))
+
+			if not branch_data.selco_extra_item_warehouse:
+				frappe.throw(_("Please set Extra Item Warehouse in Branch {0}").format(doc.selco_branch))
+
+			d.warehouse = branch_data.selco_extra_item_warehouse
+
 		if not d.rate:
 			d.rate = frappe.get_cached_value("Item Price",
 				{"price_list": "Branch Sales", "item_code":d.item_code}, "price_list_rate")
@@ -320,9 +332,20 @@ def selco_purchase_receipt_validate(doc,method):
 	# selco_cost_center = frappe.get_cached_value("Branch",local_branch,"selco_cost_center")
 	godown_cost_center = frappe.get_cached_value("Warehouse", doc.selco_godown, "selco_cost_center")
 
+	extra_item_warehouse = frappe.get_cached_value("Branch", doc.selco_branch, "selco_extra_item_warehouse")
+
 	for d in doc.get('items'):
 		d.cost_center = godown_cost_center #BRANCH2WAREHOUSE
 		d.warehouse = doc.selco_godown
+		if d.selco_warranty_free_item:
+			if not doc.selco_branch:
+				frappe.throw(_("Please set Branch in Purchase Receipt {0}").format(doc.name))
+
+			if not extra_item_warehouse:
+				frappe.throw(_("Please set Extra Item Warehouse in Branch {0}").format(doc.selco_branch))
+
+			d.warehouse = extra_item_warehouse
+
 	for d in doc.get('taxes'):
 		d.cost_center = godown_cost_center #BRANCH2WAREHOUSE
 
