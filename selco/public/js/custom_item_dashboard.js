@@ -2,7 +2,6 @@ frappe.provide('erpnext.stock');
 
 erpnext.stock.ItemDashboard = Class.extend({
 	init: function(opts) {
-		debugger
 		$.extend(this, opts);
 		this.make();
 	},
