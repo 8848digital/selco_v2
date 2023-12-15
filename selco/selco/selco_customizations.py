@@ -870,9 +870,15 @@ def selco_sales_invoice_validate(doc,method):
 
 		d.cost_center = selco_cost_center
 		d.income_account = doc.selco_sales_account
-		d.commission_value_of_sales_person = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_sales_person) / 100, doc.currency)
-		d.commission_value_of_sales_partner = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_sales_partner) / 100, doc.currency)
-		d.value_of_budget = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_budget) / 100, doc.currency)
+
+		if d.commission_rate_for_sales_person:
+			d.commission_value_of_sales_person = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_sales_person) / 100, doc.currency)
+
+		if d.commission_rate_for_sales_partner:
+			d.commission_value_of_sales_partner = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_sales_partner) / 100, doc.currency)
+
+		if d.commission_rate_for_budget:
+			d.value_of_budget = round_based_on_smallest_currency_fraction((d.net_amount * d.commission_rate_for_budget) / 100, doc.currency)
 
 		doc.total_sales_person_incentive += round_based_on_smallest_currency_fraction(d.commission_value_of_sales_person, doc.currency)
 		doc.total_budget_value += round_based_on_smallest_currency_fraction(d.value_of_budget, doc.currency)
