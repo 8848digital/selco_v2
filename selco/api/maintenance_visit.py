@@ -36,7 +36,7 @@ from frappe.utils import add_days, getdate, nowdate, today
 
 @frappe.whitelist()
 def get_maintenance_visit():
-	future_mntc_date = getdate(add_days(nowdate(), 30))
+	future_mntc_date = getdate(add_days(nowdate(), 60))
 	past_selco_cse_date = getdate(add_days(nowdate(), -7))
 	if frappe.request.data:
 		request_data = json.loads(frappe.request.data)
