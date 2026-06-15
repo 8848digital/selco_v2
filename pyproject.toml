@@ -1,0 +1,46 @@
+[project]
+name = "selco"
+authors = [
+    { name = "Selco India", email = "sudip@selco-india.com" },
+]
+description = "Selci app"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.frappe.testing.function_type_validation]
+max_module_depth = 0
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint.isort.sections]
+"frappe" = ["frappe"]
+"erpnext" = ["erpnext"]
+"hrms" = ["hrms"]
+
+[tool.ruff.lint.isort]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "frappe",
+    "erpnext",
+    "hrms",
+    "first-party",
+    "local-folder",
+]
+
+
+[project.urls]
+Homepage = "https://selco-india.com/"
+Repository = "https://github.com/8848digital/selco_v2"
+
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0,<17.0.0"
+erpnext = ">=16.0.0,<17.0.0"
