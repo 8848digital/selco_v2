@@ -11,7 +11,7 @@ with open('selco/__init__.py', 'rb') as f:
 
 def parse_requirements(path, get_dependency_links = False):
 	with open(path) as f:
-		deps = f.read().strip().split('\n')
+		deps = [d for d in f.read().strip().split('\n') if d.strip()]
 		if not get_dependency_links: return deps
 		link_pattern = re.compile(r"(git)?\+?(git|https?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
 		return [re.search(link_pattern, dep).group() for dep in deps if re.search(link_pattern, dep)]
